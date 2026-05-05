@@ -1,31 +1,18 @@
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Http;
-
-var app = WebApplication.Create();
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
 app.MapPost("/login", async (HttpContext context) =>
 {
-    var data = await context.Request.ReadFromJsonAsync<LoginRequest>();
+    var data = await context.Request.ReadFromJsonAsync<Login>();
 
-    if (data == null)
-        return Results.BadRequest();
-
-    // 🔐 SIMPLE TEST ACCOUNT (replace later with DB)
-    if (data.Username == "admin" && data.Password == "1234")
+    if (data?.Username == "admin" && data?.Password == "1234")
     {
-        return Results.Ok(new
-        {
-            success = true,
-            token = "DIOR_AUTH_TOKEN"
-        });
+        return Results.Ok(new { success = true });
     }
 
-    return Results.Ok(new
-    {
-        success = false
-    });
+    return Results.Ok(new { success = false });
 });
 
-app.Run();
+app.Run("http://0.0.0.0:10000");
 
-record LoginRequest(string Username, string Password);
+record Login(string Username, string Password);
